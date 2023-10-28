@@ -1,0 +1,104 @@
+FLUSHDB
+
+ECHO "Inserting 5 recipes into Redis as strings."
+SET "recipe:ChocolateCake" "A rich and moist chocolate cake made with dark chocolate and topped with chocolate ganache."
+SET "recipe:SpaghettiCarbonara" "A classic Italian pasta dish made with eggs, cheese, pancetta, and pepper."
+SET "recipe:ChickenTikkaMasala" "A popular Indian curry dish made with marinated chicken pieces cooked in a rich creamy tomato sauce."
+SET "recipe:VeggieTacos" "Tacos filled with a variety of vegetables, beans and topped with fresh salsa and guacamole."
+SET "recipe:ApplePie" "A traditional dessert made with tart cooking apples, a hint of cinnamon, and a flaky pie crust."
+
+ECHO "Reading the description of Chocolate Cake."
+GET "recipe:ChocolateCake"
+
+ECHO "Updating the description of Chocolate Cake."
+APPEND "recipe:ChocolateCake" " Best served with a scoop of vanilla ice cream."
+
+ECHO "Removing the recipe for Veggie Tacos."
+DEL "recipe:VeggieTacos"
+
+ECHO "Inserting steps for Spaghetti Carbonara into Redis as a list."
+LPUSH "recipe:SpaghettiCarbonara:steps" "Cook the spaghetti in salted water until al dente."
+LPUSH "recipe:SpaghettiCarbonara:steps" "Whisk eggs in a bowl and mix with grated Pecorino Romano cheese."
+RPUSH "recipe:SpaghettiCarbonara:steps" "In a pan, cook the pancetta until crisp."
+RPUSH "recipe:SpaghettiCarbonara:steps" "Combine the pasta, pancetta, and egg mixture ensuring the pasta is hot enough to cook the eggs to create a creamy sauce."
+RPUSH "recipe:SpaghettiCarbonara:steps" "Season with salt, black pepper and serve immediately."
+
+ECHO "Reading all added steps without removing them using LRANGE."
+LRANGE "recipe:SpaghettiCarbonara:steps" 0 -1
+
+ECHO "Reading and removing the first step of the recipe using LPOP."
+LPOP "recipe:SpaghettiCarbonara:steps"
+
+ECHO "Removing the all steps (in this case 1) step with text bellow"
+LREM "recipe:SpaghettiCarbonara:steps" 0 "Season with salt, black pepper and serve immediately."
+
+ECHO "Inserting fruits using SADD."
+SADD "ingredients:fruits" "apple" "banana" "cherry" "date" "elderberry"
+ECHO "Inserting meats using SADD."
+SADD "ingredients:meats" "chicken" "beef" "pork" "lamb" "turkey"
+ECHO "Inserting vegetables using SADD."
+SADD "ingredients:vegetables" "carrot" "broccoli" "spinach" "pepper" "onion"
+ECHO "Inserting dairy products using SADD."
+SADD "ingredients:dairy" "milk" "cheese" "butter" "yogurt" "cream"
+ECHO "Inserting grains using SADD."
+SADD "ingredients:grains" "rice" "wheat" "quinoa" "oats" "corn"
+
+ECHO "Checking if 'banana' is in the unique fruits set using SISMEMBER."
+SISMEMBER "ingredients:fruits" "banana"
+
+ECHO "Getting the union of fruits and vegetables using SUNION."
+SUNION "ingredients:fruits" "ingredients:vegetables"
+
+ECHO "Removing 'quinoa' from the grains ingredients set using SREM."
+SREM "ingredients:grains" "quinoa"
+
+ECHO "Adding ingredients for ChocolateCake using ZADD."
+ZADD "recipe:ChocolateCake:ingredients" 500 "flour" 200 "sugar" 3 "eggs" 250 "milk" 100 "chocolate"
+ECHO "Adding ingredients for ApplePie using ZADD."
+ZADD "recipe:ApplePie:ingredients" 300 "flour" 150 "sugar" 4 "eggs" 100 "milk" 200 "apples"
+ECHO "Adding ingredients for StrawberryShortcake using ZADD."
+ZADD "recipe:StrawberryShortcake:ingredients" 400 "flour" 250 "sugar" 2 "eggs" 200 "cream" 300 "strawberries"
+ECHO "Adding ingredients for BlueberryMuffins using ZADD."
+ZADD "recipe:BlueberryMuffins:ingredients" 350 "flour" 180 "sugar" 3 "eggs" 150 "milk" 250 "blueberries"
+ECHO "Adding ingredients for Cheesecake using ZADD."
+ZADD "recipe:Cheesecake:ingredients" 200 "graham crackers" 100 "butter" 500 "cream cheese" 200 "sugar" 3 "eggs"
+
+ECHO "Getting the ingredients and their amount for ChocolateCake using ZRANGE."
+ZRANGE "recipe:ChocolateCake:ingredients" 0 -1 WITHSCORES
+
+ECHO "Reducing the amount of chocolate needed by 20 grams using ZINCRBY."
+ZINCRBY "recipe:ChocolateCake:ingredients" -20 "chocolate"
+
+ECHO "Removing sugar from the ingredients list for ChocolateCake using ZREM."
+ZREM "recipe:ChocolateCake:ingredients" "sugar"
+
+ECHO "Adding details for ChocolateCake using HSET and HMSET."
+HSET "recipe:ChocolateCake:details" "prep_time" "45 minutes"
+HMSET "recipe:ChocolateCake:details" "cook_time" "30 minutes" "servings" "4" "difficulty" "medium"
+ECHO "Adding details for other recipes with using HMSET."
+HMSET "recipe:ApplePie:details" "prep_time" "50 minutes" "cook_time" "40 minutes" "servings" "6" "difficulty" "easy"
+HMSET "recipe:StrawberryShortcake:details" "prep_time" "20 minutes" "cook_time" "15 minutes" "servings" "4" "difficulty" "easy"
+HMSET "recipe:BlueberryMuffins:details" "prep_time" "25 minutes" "cook_time" "20 minutes" "servings" "8" "difficulty" "medium"
+
+ECHO "Getting all keys of ChocolateCake details using HKEYS."
+HKEYS "recipe:ChocolateCake:details"
+
+ECHO "Getting all values of ChocolateCake details using HVALS."
+HVALS "recipe:ChocolateCake:details"
+
+ECHO "Removing 'difficulty' key from ChocolateCake details using HDEL."
+HDEL "recipe:ChocolateCake:details" "difficulty"
+
+ECHO "Inserting geographical coordinates for countries using GEOADD."
+GEOADD "ingredient:beef:origin" 2.3522 48.8566 "France"      
+GEOADD "ingredient:beef:origin" 12.4964 41.9028 "Italy"     
+GEOADD "ingredient:beef:origin" -0.1278 51.5074 "English"  
+GEOADD "ingredient:beef:origin" 139.6917 35.6895 "Japan"   
+GEOADD "ingredient:beef:origin" -74.0060 40.7128 "USA" 
+
+ECHO "Searching for ingredients origin near France using GEOSEARCH."
+GEOSEARCH "ingredient:beef:origin" FROMMEMBER "France" BYRADIUS 1000000 m
+
+ECHO "Calculating distance between Paris and Rome using GEODIST."
+GEODIST "ingredient:beef:origin" "France" "Italy" km
+
