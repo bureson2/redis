@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipes</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Recipe Viewer</h1>
+
+        <div class="navigation">
+            <button onclick="changeRecipe(-1)">&#8592;</button>
+            <span id="recipeId">1</span>
+            <button onclick="changeRecipe(1)">&#8594;</button>
+        </div>
+
+        <div id="result">
+            <h2>Result:</h2>
+            <p><strong>ID:</strong> <span id="recipeIdResult"></span></p>
+            <p><strong>Name:</strong> <span id="recipeName"></span></p>
+            <p><strong>Description:</strong> <span id="recipeDescription"></span></p>
+            <h3>Ingredients:</h3>
+            <ul id="recipeIngredients"></ul>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

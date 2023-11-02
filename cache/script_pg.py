@@ -1,6 +1,6 @@
-import json
 from database_connector import get_pg_connection
 from database_connector import get_redis_connection
+import json
 
 def get_recipe(recipe_id):
     # Try get recipe from cache
@@ -17,10 +17,8 @@ def get_recipe(recipe_id):
     recipe = cursor.fetchone()
     cursor.close()
     conn.close()
-
     # save recipe into cache for later usage
     redis_conn.setex(f"recipe:{recipe_id}", 3600, json.dumps(recipe))
-
     return recipe
 
 if __name__ == '__main__':
